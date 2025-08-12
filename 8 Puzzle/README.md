@@ -2,6 +2,7 @@
 
 ## Practical :- 8-Puzzle Problem using BFS, DFS, Best-First Search, and Hill Climbing in C++
 
+
 ### ● Problem Statement
 
 The **8-Puzzle Problem** is a classic problem in artificial intelligence and graph theory. It consists of a 3x3 grid with tiles numbered 1-8 and one empty space (represented as `0`). The goal is to move the tiles into the correct position by sliding them one at a time into the empty space, ultimately reaching a predefined goal state.
