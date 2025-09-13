@@ -1801,5 +1801,291 @@ Where:
 #
 ---
 
+## Practical Aim: Blocks World Planning (Prolog Implementation)
+
+---
+
+### ● Problem Statement
+The **Blocks World Problem** is a classic problem in **Artificial Intelligence (AI) planning**.  
+It involves a set of blocks placed on a table, and the goal is to rearrange them into a desired configuration using a sequence of valid actions.  
+
+Each action must respect constraints (e.g., you cannot pick up a block if something is on top of it).  
+The challenge is to find a sequence of actions (a **plan**) that transforms the **initial state** into the **goal state**.
+
+#
+
+### ● Objective
+- Implement a **Blocks World planner** in Prolog.  
+- Define valid **actions** (`pickup`, `putdown`, `stack`, `unstack`).  
+- Check action **applicability** based on current state.  
+- Apply actions to generate new states.  
+- Use a **depth-first search planner** with redundancy prevention.  
+- Validate the planner using **test cases**.  
+
+#
+
+### ● Knowledge Representation
+
+| Concept              | Representation in Prolog |
+|----------------------|----------------------------|
+| States               | List of facts (e.g., `[ontable(a), clear(a), holding(none)]`) |
+| Blocks               | Declared using `block(a). block(b). block(c).` |
+| Actions              | `action(Name, Preconditions, DeleteEffects, AddEffects)` |
+| Goal                 | List of required conditions |
+| Plan                 | Sequence of actions that achieve the goal |
+
+#
+
+### ● Action Definitions
+
+The planner supports **four actions**:
+
+1. **pickup(X)**  
+   - Preconditions: block `X` is clear, on the table, and nothing is being held.  
+   - Effects: robot holds `X`, removes it from the table.  
+
+2. **putdown(X)**  
+   - Preconditions: robot is holding `X`.  
+   - Effects: place `X` on table, robot is free.  
+
+3. **unstack(X, Y)**  
+   - Preconditions: `X` is on `Y`, `X` is clear, and robot is free.  
+   - Effects: robot holds `X`, `Y` becomes clear.  
+
+4. **stack(X, Y)**  
+   - Preconditions: robot holds `X` and `Y` is clear.  
+   - Effects: place `X` on top of `Y`, robot is free.  
+
+#
+
+### ● Algorithm
+
+**Planning Approach:**  
+- Uses **depth-first search** (DFS) with a **depth limit** to avoid infinite recursion.  
+- Generates possible actions using block schemas.  
+- Checks applicability of actions using preconditions.  
+- Applies action effects (delete + add lists) to update state.  
+- Stops when **goal state** is satisfied.  
+- Avoids redundant back-and-forth moves (like `pickup` immediately after `putdown`).  
+
+**Steps:**  
+1. Start with `plan(Init, Goal, Plan)`.  
+2. If goal is satisfied → return `Plan`.  
+3. Otherwise, choose an applicable action:  
+   - Ensure it’s not a redundant move.  
+   - Apply it to generate a new state.  
+4. Continue recursively until goal is reached or depth limit exceeded.  
+
+#
+
+### ● Utility Predicates
+
+| Predicate | Purpose |
+|-----------|---------|
+| `member_eq(X, List)` | Membership check for states. |
+| `applicable(Action, State)` | Verifies if action’s preconditions are met. |
+| `apply(Action, State, NewState)` | Applies action effects (delete & add lists). |
+| `goal_satisfied(Goal, State)` | Checks if goal conditions are met. |
+| `redundant_move/2` | Prevents undoing the last move. |
+
+#
+
+### ● Sample Test Cases
+
+1. **Simple stacking**  
+```prolog
+?- test_simple.
+Testing simple stacking...
+SUCCESS! Plan: [pickup(a),stack(a,b)]
+```
+
+2. **Tower building**  
+```prolog
+?- test_tower.
+Testing tower building...
+SUCCESS! Plan: [pickup(b),stack(b,c),pickup(a),stack(a,b)]
+```
+
+3. **Complex rearrangement**  
+```prolog
+?- test_complex.
+Testing complex rearrangement...
+SUCCESS! Plan: [pickup(c),stack(c,b)]
+```
+
+#
+
+### ● Use Cases
+
+1. **AI Planning Research** – Fundamental problem for automated planning.  
+2. **Robotics** – Block-stacking scenarios for robotic arms.  
+3. **Game/Simulation Development** – Creating simple puzzle games where players rearrange blocks to reach a goal state.
+4. **Search Algorithms** – Demonstrating DFS with action schemas.  
+
+#
+
+### ● Time and Space Complexity
+
+| Operation       | Time Complexity | Space Complexity |
+|-----------------|-----------------|------------------|
+| State checking  | O(n)            | O(1)             |
+| Action check    | O(k)            | O(1)             |
+| DFS planning    | O(b^d)          | O(d)             |
+
+Where:  
+- `n` = number of facts in state  
+- `k` = number of actions  
+- `b` = branching factor (# applicable actions)  
+- `d` = search depth  
+
+#
+
+### ● Files Used
+
+| Filename         | Description |
+|------------------|-------------|
+| `blocks_world.pl` | Prolog implementation of the Blocks World planner. |
+| `README.md`      | Documentation for the implementation. |
+
+#
+---
+
+## Practical Aim: N-Queens Problem (Prolog Implementation)
+
+---
+
+### ● Problem Statement
+The **N-Queens Problem** is a classic **constraint satisfaction problem (CSP)** in Artificial Intelligence.  
+The task is to place `N` queens on an `N × N` chessboard such that:  
+
+1. No two queens are in the same row.  
+2. No two queens are in the same column.  
+3. No two queens are in the same diagonal.  
+
+The challenge is to generate valid configurations for different values of `N`, count all possible solutions, and visualize them.
+
+#
+
+### ● Objective
+-   Implement the **N-Queens Problem** in Prolog using **pure backtracking**.
+-   Generate valid queen placements with **safe position checks**.
+-   Verify solutions with **no diagonal attacks**.
+-   Display solutions with a **chessboard-like visualization**.
+-   Provide functionality to **find one solution** or **count all solutions**. 
+
+#
+
+### ● Knowledge Representation
+
+| Concept              | Representation in Prolog |
+|----------------------|----------------------------|
+| Chessboard           | Represented implicitly by `N`. |
+| Queens placement     | List `Solution` where index = column, value = row. |
+| Safe placement       | Checked using `safe_position/3`. |
+| Visualization        | Printed grid with `Q` for queen and `.` for empty cell. |
+
+#
+
+### ● Algorithm
+
+**Steps:**  
+1. Start with an empty partial solution.
+2. Place queens row by row. 
+3. For each row, try placing a queen in every column `1..N`.  
+4. Use `safe_position/3` to check column and diagonal safety. If safe, continue with recursive backtracking.
+5. If all queens placed → valid solution.
+6. Print and count solutions.  
+7. Use `aggregate_all(count, …)` to count all solutions.
+8. Print solutions with `print_board/2`
+
+**Diagonal Safety Check:**  
+For a queen at `(Row, Col)` and another at `(Row+k, Col±k)`, they must not attack each other.
+
+#
+
+### ● Utility Predicates
+
+| Predicate | Purpose |
+|-----------|---------|
+| `solve_queens(N, Solution)` | Backtracking solver that finds one solution. |
+| `safe_position(Col, Partial, Row)` | Checks if a queen can be placed safely. |
+| `solve_nqueens(N)` | Finds and prints one solution. |
+| `count_solutions(N, Count)` | Finds total number of solutions. |
+| `print_board(N, Solution)` | Prints board with queens. |
+
+#
+
+### ● Sample Test Cases
+
+1. **4-Queens**  
+```prolog
+?- test_4queens.
+=== 4-Queens Test ===
+Solution for 4 queens: [2,4,1,3]
+Board (4x4):
+. Q . . 
+. . . Q 
+Q . . . 
+. . Q . 
+```
+
+2. **8-Queens**  
+```prolog
+?- test_8queens.
+=== 8-Queens Test ===
+Solution for 8 queens: [1,5,8,6,3,7,2,4]
+Board (8x8):
+Q . . . . . . . 
+. . . . Q . . . 
+. . . . . . . Q 
+. . . . . Q . . 
+. . Q . . . . . 
+. . . . . . Q . 
+. Q . . . . . . 
+. . . Q . . . . 
+```
+
+3. **Counting Solutions**  
+```prolog
+?- test_counts.
+=== Solution Counts ===
+4-Queens has 2 solutions
+5-Queens has 10 solutions
+6-Queens has 4 solutions
+8-Queens has 92 solutions
+```
+
+#
+
+### ● Use Cases
+
+1. **Artificial Intelligence** – Constraint Satisfaction Problems (CSP).  
+2. **Chess Programming** – Understanding attacking positions.  
+3. **Search Algorithms** – Explains recursive backtracking and pruning.  
+4. **Mathematics** – Exploring combinatorial solution spaces.  
+
+#
+
+### ● Time and Space Complexity
+
+| Operation          | Time Complexity | Space Complexity |
+|--------------------|-----------------|------------------|
+| Permutation Gen.   | O(N!)           | O(N)             |
+| Safety Check       | O(N) per placement           | O(1)             |
+| Overall (N-Queens) | O(N! × N)       | O(N)             |
+
+The algorithm is exponential in nature since the **solution space grows factorially** with `N`.  
+
+#
+
+### ● Files Used
+
+| Filename        | Description |
+|-----------------|-------------|
+| `nqueens.pl`    | Prolog implementation of the N-Queens problem. |
+| `README.md`     | Documentation for the implementation. |
+
+#
+---
 
 
