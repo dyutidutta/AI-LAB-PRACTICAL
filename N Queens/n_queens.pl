@@ -1,56 +1,57 @@
 % Main solver %
-nqueens(N, Solution) :-
-    numlist(1, N, Rows),
-    permutation(Rows, Solution),
-    safe(Solution).
+solve_queens(N, Solution) :-
+    solve_queens(N, N, [], Solution).
 
-% Check if queen placement is safe (no diagonal attacks)
-safe([]).
-safe([Q|Qs]) :-
-    safe(Qs),
-    no_attack(Q, Qs, 1).
+solve_queens(_, 0, Solution, Solution).
+solve_queens(BoardSize, QueensLeft, PartialSolution, Solution) :-
+    QueensLeft > 0,
+    between(1, BoardSize, Col),              
+    safe_position(Col, PartialSolution, 1),   
+    QueensLeft1 is QueensLeft - 1,
+    solve_queens(BoardSize, QueensLeft1, [Col|PartialSolution], Solution).
 
-% Check if queen Q attacks any queen in list Qs
-no_attack(_, [], _).
-no_attack(Q, [Q1|Qs], Dist) :-
-    Q =\= Q1 + Dist,        % No diagonal attack (\)
-    Q =\= Q1 - Dist,        % No diagonal attack (/)
-    Dist1 is Dist + 1,
-    no_attack(Q, Qs, Dist1).
+% Safety check %
+safe_position(_, [], _).
+safe_position(Col, [H|T], Row) :-
+    Col =\= H,             % no same column
+    Col =\= H + Row,       % no major diagonal
+    Col =\= H - Row,       % no minor diagonal
+    Row1 is Row + 1,
+    safe_position(Col, T, Row1).
 
-% Solution finder %
-% Find first solution
+% Display %
 solve_nqueens(N) :-
-    nqueens(N, Solution),
-    format('Solution for ~w queens: ~w~n', [N, Solution]),
-    print_board(N, Solution).
+    solve_queens(N, Solution),
+    reverse(Solution, DisplaySolution),
+    format('Solution for ~w queens: ~w~n', [N, DisplaySolution]),
+    print_board(N, DisplaySolution).
 
-% Find all solutions and count them
-count_solutions(N, Count) :-
-    findall(Sol, nqueens(N, Sol), Solutions),
-    length(Solutions, Count),
-    format('~w-Queens has ~w solutions~n', [N, Count]).
-
-% Board visualization %
 print_board(N, Solution) :-
     format('Board (~wx~w):~n', [N, N]),
-    numlist(1, N, Rows),
-    maplist(print_row(N, Solution), Rows).
+    print_rows(1, N, Solution).
 
-print_row(N, Solution, Row) :-
-    numlist(1, N, Cols),
-    maplist(print_cell(Solution, Row), Cols),
-    nl.
+print_rows(Row, N, Solution) :-
+    Row =< N,
+    print_single_row(1, N, Row, Solution),
+    nl,
+    Row1 is Row + 1,
+    print_rows(Row1, N, Solution).
+print_rows(Row, N, _) :- Row > N.
 
-print_cell(Solution, Row, Col) :-
-    nth1(Col, Solution, Row),
-    write('Q ').
-print_cell(Solution, Row, Col) :-
-    nth1(Col, Solution, QueenRow),
-    QueenRow =\= Row,
-    write('. ').
+print_single_row(Col, N, Row, Solution) :-
+    Col =< N,
+    nth1(Row, Solution, QueenCol),
+    (Col =:= QueenCol -> write('Q ') ; write('. ')),
+    Col1 is Col + 1,
+    print_single_row(Col1, N, Row, Solution).
+print_single_row(Col, N, _, _) :- Col > N.
 
-% Test cases %
+% Counting solutions %
+count_solutions(N, Count) :-
+    aggregate_all(count, solve_queens(N, _), Count),
+    format('~w-Queens has ~w solutions~n', [N, Count]).
+
+% Tests %
 test_4queens :-
     writeln('=== 4-Queens Test ==='),
     solve_nqueens(4).
@@ -65,3 +66,4 @@ test_counts :-
     count_solutions(5, _),
     count_solutions(6, _),
     count_solutions(8, _).
+    
