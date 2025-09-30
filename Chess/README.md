@@ -8,7 +8,7 @@ In Chess:
 - The **AI (Black)** minimizes the evaluation score.  
 - The **Human (White)** maximizes the evaluation score.  
 
-Alpha-Beta Pruning significantly reduces the number of nodes explored, making the algorithm more efficient than plain minimax.  
+Alpha-Beta Pruning significantly reduces the number of nodes explored, making the algorithm more efficient than plain minimax.
 
 ---
 
