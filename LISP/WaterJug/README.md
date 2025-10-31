@@ -45,7 +45,7 @@ This program provides a **Lisp implementation** that simulates the process step 
 
 #
 
-### ● Algorithm (Step-by-Step Execution)
+### ● Algorithm 
 
 **Steps:**
 1. Input jug capacities `x`, `y` and goal amount `z`.  
