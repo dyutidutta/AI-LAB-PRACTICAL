@@ -2223,3 +2223,390 @@ Where:
 | `AB_CHESS.py`   | Python implementation with Pygame GUI and Alpha-Beta Pruning. |
 | `README.md`     | Documentation for the Python implementation. |
 
+#
+---
+
+## Practical Aim: Knowledge Representation and Resolution in Prolog
+
+---
+
+### ● Problem Statement
+The **Resolution Problem** demonstrates **knowledge representation and logical inference** in Prolog.  
+The goal is to encode human knowledge (facts and relationships) and derive conclusions using **logical rules** and **queries**.  
+
+This example represents philosophers, their wisdom, and teaching relationships using Prolog predicates such as `human`, `philosopher`, `wise`, and `teaches`.
+
+#
+
+### ● Objective
+- Represent knowledge using **facts and rules**.  
+- Infer new knowledge using **Prolog’s resolution mechanism**.  
+- Demonstrate logical relationships among humans, philosophers, students, and teachers.  
+- Execute queries to verify derived relationships (e.g., who teaches whom, who is mortal, etc.).
+
+#
+
+### ● Knowledge Representation
+
+| Concept            | Representation in Prolog |
+|--------------------|---------------------------|
+| Humans             | `human(X)` |
+| Mortality          | `mortal(X) :- human(X)` |
+| Philosophers       | `philosopher(X)` |
+| Wisdom             | `wise(X) :- philosopher(X)` |
+| Students & Teachers | `student(Y, X)` and `teaches(X, Y)` |
+| Existence Check    | `exists(X)` |
+
+#
+
+### ● Facts (Base Knowledge)
+
+```prolog
+fact(1, "All humans are mortal").
+fact(2, "Socrates is a human").
+fact(3, "Plato is a human").
+fact(4, "Aristotle is a human").
+fact(5, "If someone is a philosopher, then they are wise").
+fact(6, "Socrates is a philosopher").
+fact(7, "Plato is a philosopher").
+fact(8, "Aristotle was a student of Plato").
+fact(9, "Plato was a student of Socrates").
+fact(10, "If someone is wise, then they teach others").
+```
+
+#
+
+### ● Rules Derived from Facts
+
+```prolog
+mortal(X) :- human(X).                 % From fact 1
+wise(X) :- philosopher(X).             % From fact 5
+teaches(X, Y) :- wise(X), student(Y, X).   % From fact 10
+```
+
+#
+
+### ● Additional Known Relationships
+
+```prolog
+human(socrates).
+human(plato).
+human(aristotle).
+
+philosopher(socrates).
+philosopher(plato).
+
+student(aristotle, plato).
+student(plato, socrates).
+
+exists(socrates).
+exists(plato).
+exists(aristotle).
+```
+
+#
+
+### ● Algorithm (Logical Inference)
+
+**Steps:**
+1. Represent all facts about humans, philosophers, and students.  
+2. Encode logical rules linking attributes like mortality and wisdom.  
+3. Use Prolog’s **resolution** to infer new knowledge:
+   - If `human(X)` → infer `mortal(X)`.
+   - If `philosopher(X)` → infer `wise(X)`.
+   - If `wise(X)` and `student(Y, X)` → infer `teaches(X, Y)`.
+4. Query the knowledge base to test logical conclusions.
+
+#
+
+### ● Sample Queries and Expected Results
+
+| Query | Expected Result | Explanation |
+|-------|------------------|-------------|
+| `?- mortal(socrates).` | `true.` | Because Socrates is human. |
+| `?- mortal(plato).` | `true.` | Because Plato is human. |
+| `?- mortal(aristotle).` | `true.` | Because Aristotle is human. |
+| `?- wise(socrates).` | `true.` | Because Socrates is a philosopher. |
+| `?- teaches(plato, aristotle).` | `true.` | Because Plato is wise and Aristotle is his student. |
+| `?- teaches(socrates, aristotle).` | `false.` | Because Socrates is wise but Aristotle is not his student. |
+
+#
+
+### ● Use Cases
+
+1. **Artificial Intelligence** – Demonstrates logical inference through resolution.  
+2. **Knowledge Representation** – Encodes facts and relationships.  
+3. **Philosophical Reasoning** – Represents classical logic about philosophers and wisdom.  
+4. **Education Modeling** – Models teacher-student relationships based on logic.
+
+#
+
+### ● Time and Space Complexity
+
+| Operation | Time Complexity | Space Complexity |
+|------------|-----------------|------------------|
+| Fact Retrieval | O(1) | O(1) |
+| Rule Resolution | O(N) | O(N) |
+| Combined Inference | O(N × M) | O(N + M) |
+
+Here, `N` is the number of facts and `M` is the number of rules.  
+Inference cost grows linearly with rule chaining depth.
+
+#
+
+### ● Files Used
+
+| Filename | Description |
+|-----------|-------------|
+| `resolution.pl` | Prolog implementation of the philosopher knowledge base. |
+| `README.md` | Documentation for the implementation. |
+
+#
+---
+## Practical Aim: Tic-Tac-Toe Game using Lisp
+
+---
+
+### ● Problem Statement
+The **Tic-Tac-Toe Game** is a classic example of **game playing and decision-making** in Artificial Intelligence.  
+The objective is to simulate a human vs computer game where the computer uses logical strategies to win or block the player.
+
+The program implements Tic-Tac-Toe using **Lisp** with a one-dimensional board array representation and **basic AI rules** for move selection.
+
+#
+
+### ● Objective
+- Implement **Tic-Tac-Toe** logic using Lisp.  
+- Use a **one-dimensional array** to represent the 3×3 board.  
+- Apply **AI logic** to determine the computer’s move.  
+- Check for win conditions and display the result interactively.  
+
+#
+
+### ● Knowledge Representation
+
+| Concept | Representation in Lisp |
+|----------|-------------------------|
+| Empty Cell | Represented by value `2` |
+| Computer’s Move | Represented by value `3` (`X`) |
+| Player’s Move | Represented by value `5` (`O`) |
+| Board | One-dimensional array of size 10 (indices 1–9 used) |
+
+#
+
+### ● Functions Overview
+
+| Function | Purpose |
+|-----------|----------|
+| `(is-blank pos)` | Checks if a given position is blank. |
+| `(any-blank)` | Finds any available blank position. |
+| `(make2)` | Chooses center or non-corner positions strategically. |
+| `(posswin player-val)` | Checks if the player can win on the next move. |
+| `(make-move pos)` | Places a mark (`X` or `O`) on the board. |
+| `(display-board)` | Prints the current board state. |
+| `(user-move)` | Accepts move input from the user. |
+| `(check-win)` | Determines if there is a winner. |
+| `(main)` | Controls the full game loop. |
+
+#
+
+### ● Algorithm (Game Logic)
+
+**Steps:**
+1. Initialize the board with all positions blank (`2`).  
+2. Assign `X` to the computer and `O` to the user.  
+3. Alternate turns between computer and player.  
+4. For each computer turn:
+   - Check if it can **win** (`posswin 3`).
+   - Else check if it needs to **block** (`posswin 5`).
+   - Else choose center or next blank cell.  
+5. For each user turn:
+   - Input position and mark it as `O`.  
+6. After each move, check for a winner using `check-win`.  
+7. Stop the game when either player wins or all cells are filled.
+
+#
+
+### ● Sample Execution
+
+```
+You are O, computer is X.
+Board:
+. . .
+. . .
+. . .
+
+Computer plays...
+Board:
+X . .
+. . .
+. . .
+
+Enter your move (1-9): 5
+Board:
+X . .
+. O .
+. . .
+
+Computer plays...
+Board:
+X X .
+. O .
+. . .
+
+Enter your move (1-9): 9
+Board:
+X X .
+. O .
+. . O
+
+Computer plays...
+Board:
+X X X
+. O .
+. . O
+
+Computer (X) wins!
+```
+
+#
+
+### ● Use Cases
+
+1. **Artificial Intelligence** – Demonstrates rule-based AI decision-making.  
+2. **Game Development** – Simple model of turn-based logic games.  
+3. **Problem Solving** – Tests recursion and decision trees in Lisp.  
+4. **Learning Tool** – Helps understand Lisp loops, arrays, and conditions.  
+
+#
+
+### ● Time and Space Complexity
+
+| Operation | Time Complexity | Space Complexity |
+|------------|-----------------|------------------|
+| Checking Winning Combinations | O(1) | O(1) |
+| Player Move Validation | O(1) | O(1) |
+| Full Game Execution | O(N) (N ≤ 9) | O(N) |
+
+The program runs efficiently in **Constant Time** per move, with linear time for the full game sequence.
+
+#
+
+### ● Files Used
+
+| Filename | Description |
+|-----------|-------------|
+| `tictactoe.lisp` | Lisp implementation of Tic-Tac-Toe game logic. |
+| `README.md` | Documentation for the Tic-Tac-Toe implementation. |
+
+#
+---
+## Practical Aim: Water Jug Problem using Lisp
+
+---
+
+### ● Problem Statement
+The **Water Jug Problem** is a classic **state-space search problem** in Artificial Intelligence.  
+The goal is to measure exactly `Z` liters of water using two jugs with capacities `X` and `Y`, applying a sequence of valid operations (fill, empty, pour).
+
+This program provides a **Lisp implementation** that simulates the process step by step until the desired goal amount is reached.
+
+#
+
+### ● Objective
+- Implement the **Water Jug Problem** using Lisp.  
+- Use mathematical logic and **Euclidean GCD** to verify solvability.  
+- Simulate all **valid jug operations** until the goal state is achieved.  
+- Display the **state transitions** after each operation.  
+
+#
+
+### ● Knowledge Representation
+
+| Concept | Representation in Lisp |
+|----------|-------------------------|
+| Jug capacities | Variables `x` and `y` |
+| Target amount | `z` |
+| Current state | `(curx, cury)` |
+| Goal state check | `(reached-goal z curx cury)` |
+| GCD check for solvability | `(solve-gcd x y)` |
+
+#
+
+### ● Functions Overview
+
+| Function | Purpose |
+|-----------|----------|
+| `(solve-gcd a b)` | Computes the greatest common divisor of `a` and `b`. |
+| `(reached-goal z curx cury)` | Checks if the goal amount `z` is reached. |
+| `(fill-x x curx)` | Fills jug X to capacity. |
+| `(fill-y y cury)` | Fills jug Y to capacity. |
+| `(empty-x)` | Empties jug X completely. |
+| `(empty-y)` | Empties jug Y completely. |
+| `(pour-x-to-y x y curx cury)` | Transfers water from X to Y until one is empty or full. |
+| `(water-jug x y z)` | Main function to simulate jug operations and reach the goal. |
+
+#
+
+### ● Algorithm (Step-by-Step Execution)
+
+**Steps:**
+1. Input jug capacities `x`, `y` and goal amount `z`.  
+2. Check solvability using **GCD condition**:  
+   - If `z` is greater than both jugs or not divisible by `gcd(x, y)`, print “Goal not achievable.”  
+3. Start with `(0, 0)` — both jugs empty.  
+4. Repeat the following actions until the goal is reached:
+   - If jug X is empty → **Fill X**.  
+   - Else if jug X has water and jug Y is not full → **Pour from X to Y**.  
+   - Else if jug Y is full → **Empty Y**.  
+5. Stop when either jug has exactly `z` liters of water.  
+6. Print the sequence of operations and final state.  
+
+#
+
+### ● Sample Execution
+
+```
+? (water-jug 4 3 2)
+Initial state: (0, 0)
+Fill X: (4, 0)
+Pour X->Y: (1, 3)
+Empty Y: (1, 0)
+Pour X->Y: (0, 1)
+Fill X: (4, 1)
+Pour X->Y: (2, 3)
+Goal reached! Final state: (2, 3)
+```
+
+#
+
+### ● Use Cases
+
+1. **Artificial Intelligence** – Demonstrates state-space search strategy.  
+2. **Problem Solving** – Uses mathematical logic for solvability and path generation.  
+3. **Algorithm Design** – Models procedural steps to achieve a target goal.  
+4. **Teaching Tool** – Illustrates transitions between states in a simple problem space.  
+
+#
+
+### ● Time and Space Complexity
+
+| Operation | Time Complexity | Space Complexity |
+|------------|-----------------|------------------|
+| GCD Calculation | O(log(min(x, y))) | O(1) |
+| Each Jug Operation | O(1) | O(1) |
+| Total | O(k) (where k = steps to reach goal) | O(1) |
+
+Since each jug operation is constant-time, the overall time grows with the number of transitions required.
+
+#
+
+### ● Files Used
+
+| Filename | Description |
+|-----------|-------------|
+| `waterjug.lisp` | Lisp implementation of the Water Jug Problem. |
+| `README.md` | Documentation for the Water Jug implementation. |
+
+#
+---
